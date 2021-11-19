@@ -1,0 +1,29 @@
+body {
+  background-color: #015f41;
+  text-align: center;
+}
+header {
+  margin-bottom: 14vmax;
+  margin-bottom: 8vmin;
+  color: #dfdd25;
+}
+span h2 {
+  color: white;
+}
+button {
+  margin-top: 2vmax;
+  margin-top: 1vmin;
+  margin-left: 3vh;
+  border: none;
+  background-color: aqua;
+  padding: 0 2vh 0 2vh;
+  font-size: medium;
+}
+aside {
+  text-align: left;
+  color: white;
+}
+.play,
+.com {
+  margin-left: 7vmax;
+}
