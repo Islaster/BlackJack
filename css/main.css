@@ -22,8 +22,13 @@ button {
 aside {
   text-align: left;
   color: white;
+  font-size: larger;
 }
 .play,
 .com {
   margin-left: 7vmax;
+}
+input {
+  margin-left: 2vh;
+  width: 8vh;
 }
