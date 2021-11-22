@@ -7,8 +7,35 @@ const hitEl = document.querySelector(".hit");
 const standEl = document.querySelector(".stand");
 const betEl = document.querySelector(".bet");
 const input = document.querySelector("input");
+const btns = document.querySelectorAll("button");
+const suits = ["s", "c", "d", "h"];
+const ranks = [
+  "02",
+  "03",
+  "04",
+  "05",
+  "06",
+  "07",
+  "08",
+  "09",
+  "10",
+  "J",
+  "Q",
+  "K",
+  "A",
+];
+const masterDeck = buildMasterDeck();
 //app state (variables)
-let pBank, cBank, pot, pTotal, cTotal, turn, Cbet;
+let pBank,
+  cBank,
+  pot,
+  pTotal,
+  cTotal,
+  turn,
+  shuffledDeck,
+  p1Hand,
+  p2Hand,
+  winner;
 //cached element refrences
 const money = {
   potEl: document.querySelector("#pot"),
@@ -29,6 +56,9 @@ function mainInit() {
   pTotal = 0;
   cTotal = 0;
   turn = turns[0];
+  shuffledDeck = getNewShuffledDeck();
+  p1Hand = [shuffledDeck.pop(), shuffledDeck.pop()];
+  p2Hand = [shuffledDeck.pop(), shuffledDeck.pop()];
   render();
 }
 
@@ -45,14 +75,17 @@ function endRound(evt) {
 }
 function addToPot(evt) {
   //add what you bet to pot
-  pot = pot + parseInt(input.value);
+  pot += parseInt(input.value);
   pBank -= input.value;
+  console.log(pot);
   //opponent must match bet at least the same amount as you
   if (turn === "c") {
     if (cBank >= parseInt(input.value)) {
       let count = parseInt(input.value) * 2;
       if (count < cBank) {
-        pot += Math.random(Math.floor() * count);
+        const cBet = Math.random(Math.floor() * count);
+        pot += cBet;
+        cBank -= cBet;
       }
     } else {
       pot += cBank;
@@ -64,6 +97,52 @@ function render() {
   money.potEl.innerText = pot;
   money.pBank.innerHTML = pBank;
   money.cBank.innerHTML = cBank;
+  if (winner === "c") {
+    headEl.childNodes[0].innerHTML = "Dealer has won";
+    btns.forEach(function (btn) {
+      btn.setAttribute("disabled", "true");
+    });
+  } else if (winner === "p") {
+    headEl.childNodes[0].innerHTML = "You have won";
+    btns.forEach(function (btn) {
+      btn.setAttribute("disabled", "true");
+    });
+  }
 }
 
-function loseWin() {}
+function loseWin() {
+  if (cBank === 0) {
+    winner = turns[0];
+  } else if (pBank === 0) {
+    winner = turns[1];
+  }
+}
+
+function buildMasterDeck() {
+  const deck = [];
+  // Use nested forEach to generate card objects
+  suits.forEach(function (suit) {
+    ranks.forEach(function (rank) {
+      deck.push({
+        // The 'face' property maps to the library's CSS classes for cards
+        face: `${suit}${rank}`,
+        // Setting the 'value' property for game of blackjack, not war
+        value: Number(rank) || (rank === "A" ? 11 : 10),
+      });
+    });
+  });
+  return deck;
+}
+
+function getNewShuffledDeck() {
+  // Create a copy of the masterDeck (leave masterDeck untouched!)
+  const tempDeck = [...masterDeck];
+  const newShuffledDeck = [];
+  while (tempDeck.length) {
+    // Get a random index for a card still in the tempDeck
+    const rndIdx = Math.floor(Math.random() * tempDeck.length);
+    // Note the [0] after splice - this is because splice always returns an array and we just want the card object in that array
+    newShuffledDeck.push(tempDeck.splice(rndIdx, 1)[0]);
+  }
+  return newShuffledDeck;
+}
