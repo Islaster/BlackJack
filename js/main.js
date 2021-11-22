@@ -1,4 +1,3 @@
-"use strict";
 //constants
 const headEl = document.querySelector("header");
 const cTotalEl = document.querySelector(".computer");
@@ -65,32 +64,39 @@ function mainInit() {
 function addCards(evt) {
   //add card to hand if opponent doesnt already have it in his hand
 }
-function endRound(evt) {
+function endRound() {
   //change players
+
   if (turn === turns[0]) {
+    console.log(turn);
     turn = turns[1];
   } else {
     turn = turns[0];
+    console.log(turn);
   }
+  if (pTotal > cTotal && pTotal <= 21) {
+    pBank += pot;
+    pot = 0;
+  } else if (cTotal > pTotal && cTotal <= 21) {
+    cBank += pot;
+    pot = 0;
+  }
+
+  render();
 }
 function addToPot(evt) {
   //add what you bet to pot
   pot += parseInt(input.value);
-  pBank -= input.value;
-  console.log(pot);
+  pBank -= pot;
   //opponent must match bet at least the same amount as you
   if (turn === "c") {
-    if (cBank >= parseInt(input.value)) {
-      let count = parseInt(input.value) * 2;
-      if (count < cBank) {
-        const cBet = Math.random(Math.floor() * count);
-        pot += cBet;
-        cBank -= cBet;
-      }
-    } else {
-      pot += cBank;
+    if (cBank > pot) {
+      cBank -= pot;
+      console.log(pot);
+      pot += pot;
     }
   }
+  render();
 }
 
 function render() {
