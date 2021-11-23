@@ -24,6 +24,10 @@ const ranks = [
   "A",
 ];
 const masterDeck = buildMasterDeck();
+const cCard1 = document.createElement("div");
+const cCard2 = document.createElement("div");
+const pCard1 = document.createElement("div");
+const pCard2 = document.createElement("div");
 //app state (variables)
 let pBank,
   cBank,
@@ -58,21 +62,42 @@ function mainInit() {
   shuffledDeck = getNewShuffledDeck();
   p1Hand = [shuffledDeck.pop(), shuffledDeck.pop()];
   p2Hand = [shuffledDeck.pop(), shuffledDeck.pop()];
+  pCard1.setAttribute("class", `card ${shuffledDeck.pop().face}`);
+  pCard2.setAttribute("class", `card ${shuffledDeck.pop().face}`);
+  cCard1.setAttribute("class", `card ${shuffledDeck.pop().face}`);
+  cCard2.setAttribute("class", `card ${shuffledDeck.pop().face}`);
+  cTotalEl.appendChild(cCard1);
+  cTotalEl.appendChild(cCard2);
+  pTotalEl.appendChild(pCard1);
+  pTotalEl.appendChild(pCard2);
   render();
 }
 
 function addCards(evt) {
   //add card to hand if opponent doesnt already have it in his hand
+  if (turn === turns[0]) {
+    const newCard = document.createElement("div");
+    newCard.setAttribute("class", `card ${shuffledDeck.pop().face}`);
+    pTotalEl.appendChild(newCard);
+    console.log(pTotalEl);
+  }
 }
 function endRound() {
   //change players
 
   if (turn === turns[0]) {
-    console.log(turn);
     turn = turns[1];
+    console.log(turn);
   } else {
     turn = turns[0];
     console.log(turn);
+  }
+  if (turn === "c") {
+    if (cBank > pot) {
+      cBank -= pot;
+      console.log("hello");
+      pot += pot;
+    }
   }
   if (pTotal > cTotal && pTotal <= 21) {
     pBank += pot;
@@ -88,14 +113,6 @@ function addToPot(evt) {
   //add what you bet to pot
   pot += parseInt(input.value);
   pBank -= pot;
-  //opponent must match bet at least the same amount as you
-  if (turn === "c") {
-    if (cBank > pot) {
-      cBank -= pot;
-      console.log(pot);
-      pot += pot;
-    }
-  }
   render();
 }
 

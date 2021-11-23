@@ -11,8 +11,6 @@ span h2 {
   color: white;
 }
 button {
-  margin-top: 2vmax;
-  margin-top: 1vmin;
   margin-left: 3vh;
   border: none;
   background-color: aqua;
@@ -31,4 +29,8 @@ aside {
 input {
   margin-left: 2vh;
   width: 8vh;
+}
+div {
+  margin: 0;
+  padding: 0;
 }
