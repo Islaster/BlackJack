@@ -1,13 +1,21 @@
-//constants
-const headEl = document.querySelector("header");
-const cTotalEl = document.querySelector(".computer");
-const pTotalEl = document.querySelector(".player");
-const hitEl = document.querySelector(".hit");
-const standEl = document.querySelector(".stand");
-const betEl = document.querySelector(".bet");
-const input = document.querySelector("input");
-const btns = document.querySelectorAll("button");
-const suits = ["s", "c", "d", "h"];
+//Constants
+const pCardsEl = document.querySelector(".pCards"); //Player current cards
+const pBankEl = document.querySelector(".pBank"); //Player Bank
+const cCardsEl = document.querySelector(".cCards"); //Dealer current cards
+const cBankEl = document.querySelector("#cBank"); //Dealer bank
+const potEl = document.querySelector("#pot"); //money in the middle
+const banner = document.querySelector("header"); //staging for winner
+const round = document.querySelector(".round"); //button to start next round
+const hitEl = document.querySelector(".hit"); //hit button
+const standEl = document.querySelector(".stand"); //stand button
+const betEl = document.querySelector(".bet"); //bet button
+const c1CardEl = document.createElement("div"); //staging for Dealer card 1
+const c2CardEl = document.createElement("div"); //staging for Dealer card 2
+const p1CardEl = document.createElement("div"); //staging for Player card 1
+const p2CardEl = document.createElement("div"); //staging for Player card 2
+const newCardEl = document.createElement("div"); //staging for new card
+const winEl = document.createElement("h2"); //current winner
+const suits = ["s", "c", "d", "h"]; //for tracking type of suit
 const ranks = [
   "02",
   "03",
@@ -22,123 +30,152 @@ const ranks = [
   "Q",
   "K",
   "A",
-];
+]; //for tracking card number
 const masterDeck = buildMasterDeck();
-const cCard1 = document.createElement("div");
-const cCard2 = document.createElement("div");
-const pCard1 = document.createElement("div");
-const pCard2 = document.createElement("div");
-//app state (variables)
-let pBank,
-  cBank,
-  pot,
-  pTotal,
-  cTotal,
-  turn,
-  shuffledDeck,
-  p1Hand,
-  p2Hand,
-  winner;
-//cached element refrences
-const money = {
-  potEl: document.querySelector("#pot"),
-  pBank: document.querySelector(".play"),
-  cBank: document.querySelector(".com"),
-};
-const turns = ["p", "c"];
-//event Listeners
-hitEl.addEventListener("click", addCards);
-standEl.addEventListener("click", endRound);
-betEl.addEventListener("click", addToPot);
+
+//state variables
+let pot, //for tracking pot
+  pBank, //for tracking Player bank
+  cBank, //for tracking Dealer bank
+  pScore, //for tracking Player current score
+  cScore, //for tracking Dealer current score
+  shuffledDeck, //for tracking deck
+  p1Hand, //for tracking Player curret hand
+  p2Hand, // for tracking Dealer current hand
+  money, //for tracking how much player bets
+  turn; //for tracking whose turn it is
+
+//event listeners
+hitEl.addEventListener("click", addToHand); //adds functionality to hit button
+standEl.addEventListener("click", dealerTurn); //adds functionality to stand button
+betEl.addEventListener("click", addToPot); //adds functionality to bet button
+round.addEventListener("click", newRound); //add functionality to new round button
 //functions
-mainInit();
-function mainInit() {
-  pBank = 20000;
-  cBank = 20000;
-  pot = 0;
-  pTotal = 0;
-  cTotal = 0;
-  turn = turns[0];
-  shuffledDeck = getNewShuffledDeck();
-  p1Hand = [shuffledDeck.pop(), shuffledDeck.pop()];
-  p2Hand = [shuffledDeck.pop(), shuffledDeck.pop()];
-  pCard1.setAttribute("class", `card ${shuffledDeck.pop().face}`);
-  pCard2.setAttribute("class", `card ${shuffledDeck.pop().face}`);
-  cCard1.setAttribute("class", `card ${shuffledDeck.pop().face}`);
-  cCard2.setAttribute("class", `card ${shuffledDeck.pop().face}`);
-  cTotalEl.appendChild(cCard1);
-  cTotalEl.appendChild(cCard2);
-  pTotalEl.appendChild(pCard1);
-  pTotalEl.appendChild(pCard2);
+init();
+function init() {
+  //inital state of game
+  shuffledDeck = getNewShuffledDeck(); //shuffled deck
+  p1Hand = [shuffledDeck.pop(), shuffledDeck.pop()]; //Player hand
+  p2Hand = [shuffledDeck.pop(), shuffledDeck.pop()]; //Dealer hand
+  pScore = p1Hand[0].value + p1Hand[1].value; //Player Score
+  cScore = p2Hand[0].value + p2Hand[1].value; //Dealer Score
+  pBank = 2000; //Player Bank
+  cBank = 2000; //Dealer bank
+  pot = 0; //inital state of pot
+  turn = true; //starts on Player turn
+  money = 0; //reset bet tracker
+  turnOffButtons(standEl);
+  turnOffButtons(hitEl);
+  turnOffButtons(round);
   render();
 }
 
-function addCards(evt) {
-  //add card to hand if opponent doesnt already have it in his hand
-  if (turn === turns[0]) {
-    const newCard = document.createElement("div");
-    newCard.setAttribute("class", `card ${shuffledDeck.pop().face}`);
-    pTotalEl.appendChild(newCard);
-    console.log(pTotalEl);
+function addToPot() {
+  if (pBank !== 0) {
+    pBank -= 500; //take 500 from Player Bank
+    pot += 500; //put 500 in pot
+    money += 500; //adds 500 to money
   }
+  if (pBank === 0) {
+    betEl.setAttribute("disabled", "true"); //turn off button when bank is empty
+  }
+  turnOnButton(hitEl); //turn on hit button
+  turnOnButton(standEl); //turn on stand button
+  render();
 }
-function endRound() {
-  //change players
 
-  if (turn === turns[0]) {
-    turn = turns[1];
-    console.log(turn);
-  } else {
-    turn = turns[0];
-    console.log(turn);
+function dealerTurn() {
+  //changes it to Dealer turn
+  if (turn === true) {
+    turn = false;
   }
-  if (turn === "c") {
-    if (cBank > pot) {
-      cBank -= pot;
-      console.log("hello");
-      pot += pot;
+  //Dealer logic
+  if (turn === false) {
+    //betting logic
+    if (cBank >= money) {
+      //match Player bet
+      cBank -= money;
+      pot += money;
+    } else {
+      //All in
+      cBank -= cBank;
+      pot += cBank;
     }
-  }
-  if (pTotal > cTotal && pTotal <= 21) {
-    pBank += pot;
-    pot = 0;
-  } else if (cTotal > pTotal && cTotal <= 21) {
-    cBank += pot;
-    pot = 0;
-  }
+    //Dealer Hand logic
+    if (cScore <= 17) {
+      newCard = shuffledDeck.pop(); //grabs new card
+      cScore += newCard.value; //adds new card score to Dealer score
+      newCardEl.setAttribute("class", `card ${newCard.face}`); //adding card to stage
+      cCardsEl.appendChild(newCardEl); //pushing card to browser
+    }
+    //turns off buttons
+    if (hitEl.disabled === false) {
+      turnOffButtons(hitEl);
+    }
+    turnOffButtons(standEl);
 
+    //checks for winner
+    if (pBank === 0 && pot === 0) {
+      winEl.innerText = "Dealer has won";
+      banner.appendChild(winEl);
+    } else if (cBank === 0 && pot === 0) {
+      winEl.innerText = "Player has won";
+      banner.appendChild(winEl);
+    }
+    //back to Player turn
+    if (pBank !== 0 && cBank !== 0) {
+      round.removeAttribute("disabled"); //to end round
+    }
+    turn = true; //ends Dealer turn
+    render(); //sends to browser
+  }
+}
+
+function addToHand() {
+  //new card logic
+  newCard = shuffledDeck.pop(); //pulls card from deck
+  newCardEl.setAttribute("class", `card ${newCard.face}`); //sets up new card
+  pScore += newCard.value; //new Player score
+  pCardsEl.appendChild(newCardEl); //adds card to hand
+  turnOffButtons(hitEl); // turn off hit button
+  turnOffButtons(betEl); //turn off bet button
   render();
 }
-function addToPot(evt) {
-  //add what you bet to pot
-  pot += parseInt(input.value);
-  pBank -= pot;
+
+function newRound() {
+  //get rid of excess cards for both Dealer and Player
+  if (pCardsEl.childNodes.length > 2) {
+    pCardsEl.removeChild(pCardsEl.firstChild);
+  }
+  if (cCardsEl.childNodes.length > 2) {
+    cCardsEl.removeChild(cCardsEl.firstChild);
+  }
+  //win/lose pot logic
+  if (cScore < 21 && cScore > pScore) {
+    //if Dealer wins pot
+    cBank += pot; //adds pot to Dealer Bank
+    pot = 0; //resets pot
+  } else if (pScore < 21 && cScore < pScore) {
+    //If Player wins pot
+    pBank += pot; //adds pot to Dealer Bank
+    pot = 0; //resets pot
+  }
+  //new Hands and score
+  p1Hand = [shuffledDeck.pop(), shuffledDeck.pop()]; //player Hand
+  p2Hand = [shuffledDeck.pop(), shuffledDeck.pop()]; //Dealer Hand
+  pScore = p1Hand[0].value + p1Hand[1].value; //Player score
+  cScore = p2Hand[0].value + p2Hand[1].value; //Dealer score
+  //buttons
+  betEl.removeAttribute("disabled"); // turn on bet button
+  round.setAttribute("disabled", "true"); // turn off new round button
   render();
 }
 
 function render() {
-  money.potEl.innerText = pot;
-  money.pBank.innerHTML = pBank;
-  money.cBank.innerHTML = cBank;
-  if (winner === "c") {
-    headEl.childNodes[0].innerHTML = "Dealer has won";
-    btns.forEach(function (btn) {
-      btn.setAttribute("disabled", "true");
-    });
-  } else if (winner === "p") {
-    headEl.childNodes[0].innerHTML = "You have won";
-    btns.forEach(function (btn) {
-      btn.setAttribute("disabled", "true");
-    });
-  }
-}
-
-function loseWin() {
-  if (cBank === 0) {
-    winner = turns[0];
-  } else if (pBank === 0) {
-    winner = turns[1];
-  }
+  pushCards(pCardsEl, p1CardEl, p2CardEl, cCardsEl, c1CardEl, c2CardEl);
+  pBankEl.innerHTML = pBank; //push Player bank
+  cBankEl.innerHTML = cBank; //push Dealer bank
+  potEl.innerHTML = pot; //pushing pot to browser
 }
 
 function buildMasterDeck() {
@@ -168,4 +205,23 @@ function getNewShuffledDeck() {
     newShuffledDeck.push(tempDeck.splice(rndIdx, 1)[0]);
   }
   return newShuffledDeck;
+}
+//Helper Functions
+function turnOnButton(btn) {
+  btn.removeAttribute("disabled");
+}
+function pushCards(el1, div1, div2, el2, div3, div4) {
+  div1.setAttribute("class", `card ${p1Hand[0].face}`);
+  div2.setAttribute("class", `card ${p1Hand[1].face}`);
+  div3.setAttribute("class", `card ${p2Hand[0].face}`);
+  div4.setAttribute("class", `card ${p2Hand[1].face}`);
+  el1.appendChild(div1);
+  el1.appendChild(div2);
+  el2.appendChild(div3);
+  0;
+  el2.appendChild(div4);
+}
+
+function turnOffButtons(btn) {
+  btn.setAttribute("disabled", "true");
 }
