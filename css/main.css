@@ -10,6 +10,9 @@ header {
 span h2 {
   color: white;
 }
+.computer {
+  text-align: center;
+}
 button {
   margin-left: 3vh;
   border: none;
@@ -18,9 +21,14 @@ button {
   font-size: medium;
 }
 aside {
-  text-align: left;
+  display: flex;
   color: white;
   font-size: larger;
+  justify-content: flex-start;
+}
+.cBank,
+.pBank {
+  display: block;
 }
 .play,
 .com {

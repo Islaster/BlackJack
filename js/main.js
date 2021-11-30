@@ -112,6 +112,9 @@ function dealerTurn() {
     if (hitEl.disabled === false) {
       turnOffButtons(hitEl);
     }
+    if (betEl.disabled === false) {
+      turnOffButtons(hitEl);
+    }
     turnOffButtons(standEl);
 
     //checks for winner
@@ -152,13 +155,25 @@ function newRound() {
   }
   //win/lose pot logic
   if (cScore < 21 && cScore > pScore) {
+    console.log(`Dealer score: ${cScore}`);
     //if Dealer wins pot
     cBank += pot; //adds pot to Dealer Bank
     pot = 0; //resets pot
-  } else if (pScore < 21 && cScore < pScore) {
+  }
+  if (pScore < 21 && cScore < pScore) {
     //If Player wins pot
+    console.log(`Player score: ${pScore}`);
     pBank += pot; //adds pot to Dealer Bank
     pot = 0; //resets pot
+  }
+  //if either dealer or player gets over 21
+  if (cScore > 21 && pScore < 21) {
+    pBank += pot;
+    pot = 0;
+  }
+  if (pScore > 21 && cScore < 21) {
+    cBank += pot;
+    pot = 0;
   }
   //new Hands and score
   p1Hand = [shuffledDeck.pop(), shuffledDeck.pop()]; //player Hand
