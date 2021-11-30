@@ -108,6 +108,28 @@ function dealerTurn() {
       newCardEl.setAttribute("class", `card ${newCard.face}`); //adding card to stage
       cCardsEl.appendChild(newCardEl); //pushing card to browser
     }
+
+    //win/lose pot logic
+    if (cScore <= 21 && cScore > pScore) {
+      //if Dealer wins pot
+      cBank += pot; //adds pot to Dealer Bank
+      pot = 0; //resets pot
+    }
+    if (pScore <= 21 && cScore < pScore) {
+      //If Player wins pot
+      pBank += pot; //adds pot to Dealer Bank
+      pot = 0; //resets pot
+    }
+    //if either dealer or player gets over 21
+    if (cScore > 21 && pScore < 21) {
+      pBank += pot;
+      pot = 0;
+    }
+    if (pScore > 21 && cScore < 21) {
+      cBank += pot;
+      pot = 0;
+    }
+
     //turns off buttons
     if (hitEl.disabled === false) {
       turnOffButtons(hitEl);
@@ -117,18 +139,8 @@ function dealerTurn() {
     }
     turnOffButtons(standEl);
 
-    //checks for winner
-    if (pBank === 0 && pot === 0) {
-      winEl.innerText = "Dealer has won";
-      banner.appendChild(winEl);
-    } else if (cBank === 0 && pot === 0) {
-      winEl.innerText = "Player has won";
-      banner.appendChild(winEl);
-    }
     //back to Player turn
-    if (pBank !== 0 && cBank !== 0) {
-      round.removeAttribute("disabled"); //to end round
-    }
+    round.removeAttribute("disabled"); //to end round
     turn = true; //ends Dealer turn
     render(); //sends to browser
   }
@@ -153,28 +165,18 @@ function newRound() {
   if (cCardsEl.childNodes.length > 2) {
     cCardsEl.removeChild(cCardsEl.firstChild);
   }
-  //win/lose pot logic
-  if (cScore < 21 && cScore > pScore) {
-    console.log(`Dealer score: ${cScore}`);
-    //if Dealer wins pot
-    cBank += pot; //adds pot to Dealer Bank
-    pot = 0; //resets pot
+
+  //checks for winner
+  if (pBank === 0 && pot === 0) {
+    console.log("hello");
+    winEl.textContent = "Dealer has won";
+    banner.appendChild(winEl);
+  } else if (cBank === 0 && pot === 0) {
+    console.log("hello");
+    winEl.textContent = "Player has won";
+    banner.appendChild(winEl);
   }
-  if (pScore < 21 && cScore < pScore) {
-    //If Player wins pot
-    console.log(`Player score: ${pScore}`);
-    pBank += pot; //adds pot to Dealer Bank
-    pot = 0; //resets pot
-  }
-  //if either dealer or player gets over 21
-  if (cScore > 21 && pScore < 21) {
-    pBank += pot;
-    pot = 0;
-  }
-  if (pScore > 21 && cScore < 21) {
-    cBank += pot;
-    pot = 0;
-  }
+
   //new Hands and score
   p1Hand = [shuffledDeck.pop(), shuffledDeck.pop()]; //player Hand
   p2Hand = [shuffledDeck.pop(), shuffledDeck.pop()]; //Dealer Hand
@@ -233,7 +235,6 @@ function pushCards(el1, div1, div2, el2, div3, div4) {
   el1.appendChild(div1);
   el1.appendChild(div2);
   el2.appendChild(div3);
-  0;
   el2.appendChild(div4);
 }
 
