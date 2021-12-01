@@ -16,7 +16,7 @@
 
 ## Game Screen
 
-<img src='https://imgur.com/a/eKRsIRf'>
+<img src='https://i.imgur.com/j6XfJ3S.png'>
 
 ## [Start Game](https://islaster.github.io/BlackJack/)
 
