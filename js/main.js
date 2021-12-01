@@ -121,11 +121,11 @@ function dealerTurn() {
       pot = 0; //resets pot
     }
     //if either dealer or player gets over 21
-    if (cScore > 21 && pScore < 21) {
+    if (cScore > 21 && pScore <= 21) {
       pBank += pot;
       pot = 0;
     }
-    if (pScore > 21 && cScore < 21) {
+    if (pScore > 21 && cScore <= 21) {
       cBank += pot;
       pot = 0;
     }
@@ -151,6 +151,7 @@ function addToHand() {
   newCard = shuffledDeck.pop(); //pulls card from deck
   newCardEl.setAttribute("class", `card ${newCard.face}`); //sets up new card
   pScore += newCard.value; //new Player score
+  p1Hand.push(newCard); // push card to hand
   pCardsEl.appendChild(newCardEl); //adds card to hand
   turnOffButtons(hitEl); // turn off hit button
   turnOffButtons(betEl); //turn off bet button
