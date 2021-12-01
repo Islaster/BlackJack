@@ -16,7 +16,7 @@
 
 ## Game Screen
 
-![Game Screen](\css\card-deck-css\images\gameScreen.png)
+<img src='https://imgur.com/a/eKRsIRf'>
 
 ## [Start Game](https://islaster.github.io/BlackJack/)
 
