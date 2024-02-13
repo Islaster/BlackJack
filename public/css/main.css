@@ -1,0 +1,137 @@
+/* Reset some basic elements */
+body,
+h1,
+h2,
+h3,
+p,
+button,
+input {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Basic styling */
+body {
+  background-color: #015f41;
+  color: #fff;
+  font-family: "Arial", sans-serif;
+  text-align: center;
+  padding: 20px;
+}
+
+header {
+  color: #dfdd25;
+  margin-bottom: 20px;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.dealer-info,
+.player-info {
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  background-color: #02735e;
+}
+
+.dealer-info {
+  background-color: #02735e; /* Darker shade for dealer to stand out */
+}
+
+.player-info {
+  background-color: #024e36; /* Different shade for player */
+}
+
+/* Styling for the Pot Information */
+.pot-info {
+  margin: 20px 0;
+  color: #dfdd25; /* Bright color for emphasis */
+  font-size: 1.2em; /* Slightly larger font size for visibility */
+}
+
+.game-controls input[type="number"],
+.game-controls button {
+  padding: 5px;
+  margin: 0 5px;
+}
+
+button {
+  border: none;
+  background-color: aqua;
+  color: black;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #48d1cc;
+}
+
+.game-stats h3,
+.dealer-info h2,
+.player-info h2 {
+  margin-bottom: 10px;
+}
+
+.game-stats p {
+  margin: 10px 0;
+}
+
+footer {
+  margin-top: 20px;
+  color: #ddd;
+}
+
+.bust {
+  position: absolute;
+  top: 50%; /* Adjust positioning as needed */
+  left: 47%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem; /* Starting font size, will grow from here */
+  font-weight: bold;
+  color: red; /* Adjust color as needed */
+  animation: spinAndGrow 2s ease-in-out infinite; /* Adjust timing as needed */
+}
+
+.pot-amount-animation {
+  position: absolute;
+  color: greenyellow;
+  left: 51%;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  animation: fadeOutUp 3s forwards;
+}
+
+@keyframes fadeOutUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+}
+
+@keyframes spinAndGrow {
+  from {
+    transform: scale(1) rotate(0deg);
+  }
+  to {
+    transform: scale(5) rotate(360deg); /* Adjust scale for desired size */
+  }
+}
+
+@media (max-width: 768px) {
+  .game-info {
+    flex-direction: column;
+  }
+}

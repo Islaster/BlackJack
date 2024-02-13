@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/card-deck-css/css/cardstarter.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <title>BlackJack</title>
+    <script src="js/main.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <h1 class="logo">Welcome To BlackJack</h1>
+    </header>
+    <main>
+      <!-- Dealer Section -->
+      <section class="dealer-info">
+        <h2>Dealer:</h2>
+        <div class="cCards"></div>
+        <h3><span id="cBank"></span></h3>
+      </section>
+
+      <!-- Pot Section -->
+      <section class="pot-info">
+        <h3><span id="pot"></span></h3>
+      </section>
+
+      <!-- Player Section -->
+      <section class="player-info">
+        <h2>Player:</h2>
+        <div class="pCards"></div>
+        <h3><span class="pBank"></span></h3>
+      </section>
+
+      <!-- Game Controls -->
+      <section class="game-controls">
+        <label for="betAmount">Bet Amount:</label>
+        <input
+          type="number"
+          id="betAmount"
+          name="betAmount"
+          min="0"
+          step="100"
+          value="500"
+        />
+        <button class="bet">Bet</button>
+        <button class="hit">Hit</button>
+        <button class="stand">Stand</button>
+        <button class="round">New Round</button>
+      </section>
+
+      <!-- Game Stats Section -->
+      <section class="game-stats">
+        <h3>Game Stats:</h3>
+        <p>Wins: <span id="playerWins"></span></p>
+        <p>Losses: <span id="playerLosses"></span></p>
+        <p>Draws: <span id="draws"></span></p>
+      </section>
+    </main>
+    <footer>
+      <p>BlackJack Game - Enjoy responsibly!</p>
+    </footer>
+  </body>
+</html>
