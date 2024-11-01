@@ -1,8 +1,12 @@
 // Define game state variables
 let deck, playerHand, dealerHand, playerMoney, dealerMoney, pot;
-let playerWins = 0,
-  playerLosses = 0,
-  draws = 0;
+let winCount = 0,
+  lossCount = 0,
+  drawCount = 0,
+  turnCount = 1;
+let lose = false,
+  win = false,
+  draw = false;
 
 // DOM Elements
 const playerCards = document.querySelector(".pCards");
@@ -16,6 +20,9 @@ const betButton = document.querySelector(".bet");
 const newRoundButton = document.querySelector(".round");
 const betAmountEl = document.getElementById("betAmount");
 const playerSection = document.querySelector(".player-info");
+const draws = document.getElementById("draws");
+const wins = document.getElementById("playerWins");
+const losses = document.getElementById("playerLosses");
 
 // Initialize game
 function init() {
@@ -40,6 +47,7 @@ function resetRound() {
   disableButton(hitButton);
   disableButton(standButton);
   disableButton(newRoundButton);
+  turnCount=1
   if (document.querySelector(".bust")) {
     document.querySelector(".bust").remove();
   }
@@ -112,6 +120,8 @@ hitButton.addEventListener("click", function () {
 
 // Player decides to stand
 standButton.addEventListener("click", function () {
+  disableButton(standButton)
+  disableButton(hitButton)
   dealerTurn();
   potWinnings();
 });
@@ -133,6 +143,7 @@ betButton.addEventListener("click", function () {
     playerMoney -= betAmount;
     dealerMoney -= betAmount;
     pot += betAmount * 2;
+    disableButton(betButton);
     updateUI();
 
     if (hitButton.disabled && standButton.disabled && newRoundButton.disabled) {
@@ -147,10 +158,18 @@ betButton.addEventListener("click", function () {
 
 // Dealer's turn logic
 function dealerTurn() {
+  if (turnCount == 1) {
+    dealerCards.innerHTML=""
+    
+    // Show the full dealer's hand
+    dealerCards.innerHTML = dealerHand
+    .map((card) => createCardHTML(card)) // Render all dealer cards face up
+    .join("")
+  }
+  turnCount++
   while (calculateScore(dealerHand) < 17) {
     hit(dealerHand);
   }
-  potWinnings();
 }
 
 // Helper function to show pot amount above bank
@@ -173,30 +192,54 @@ function showPotAmountAboveBank(winner) {
 function potWinnings() {
   const playerScore = calculateScore(playerHand);
   const dealerScore = calculateScore(dealerHand);
+  console.log("player score: ", playerScore);
+  console.log("Dealer Score: ", dealerScore)
+  if (win) {
+    winCount++
+  }
+  if (lose) {
+    lossCount++
+  }
+  if (draw) {
+    drawCount++
+  }
 
   if (playerScore > 21) {
     showPotAmountAboveBank("dealer");
     dealerMoney += pot;
-    playerLosses++;
-  } else if (dealerScore > 21 || playerScore > dealerScore) {
+    lose = true
+    console.log("player bust")
+  } else if (dealerScore > 21) {
     showPotAmountAboveBank("player");
     playerMoney += pot;
-    playerWins++;
+    win = true
+    console.log("dealer bust")
   } else if (playerScore < dealerScore) {
     showPotAmountAboveBank("dealer");
     dealerMoney += pot;
-    playerLosses++;
-  } else if (playerScore === dealerScore) {
+    lose = true
+    console.log("dealer wins")
+  } else if (playerScore > dealerScore) {
+    showPotAmountAboveBank("player");
+    playerMoney += pot;
+    win = true
+    console.log("player wins")
+   } 
+  else if (playerScore === dealerScore) {
     // Draw condition, show pot amount for both
     const splitPot = pot / 2;
     playerMoney += splitPot;
     dealerMoney += splitPot;
-    draws++;
+    drawCount++;
+    console.log("draw")
     // Optional: Show pot split for draw
   }
 
   pot = 0;
-  updateUI();
+
+  setTimeout(() => {
+    updateUI(); 
+  },1000)
 }
 
 // Calculate the score of a given hand
@@ -226,10 +269,22 @@ function calculateScore(hand) {
 // Update the game UI
 function updateUI() {
   playerCards.innerHTML = playerHand.map(createCardHTML).join("");
-  dealerCards.innerHTML = dealerHand.map(createCardHTML).join("");
+  if (turnCount == 1) {
+    const dealerHandDisplay = dealerHand.slice(); // Copy dealer's hand
+    dealerHandDisplay[0] = { ...dealerHand[0], faceDown: true }; // Set first card facedown
+    
+    dealerCards.innerHTML = dealerHandDisplay
+    .map((card) => createCardHTML(card, card.faceDown))
+    .join("");
+  } else {
+    dealerCards.innerHTML=dealerHand.map(createCardHTML).join("")
+  }
   playerBank.textContent = `Player Bank: $${playerMoney}`;
   dealerBank.textContent = `Dealer Bank: $${dealerMoney}`;
   potEl.textContent = `Pot: $${pot}`;
+  wins.innerHTML = winCount;
+  losses.innerHTML = lossCount
+  draws.innerHTML = drawCount
 }
 
 // Generate HTML for a card based on its suit and value
